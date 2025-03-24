@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Candidates</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        .actions-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .actions-btns .btn {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-info">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <div class="container mt-4">
+        <h2 class="mb-4">
+            <i class="bi bi-person-badge me-2"></i>Manage Candidates
+        </h2>
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Party</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for candidate in candidates %}
+                    <tr>
+                        <td>{{ candidate.student_id }}</td>
+                        <td>{{ candidate.name }}</td>
+                        <td>{{ candidate.position }}</td>
+                        <td>{{ candidate.party }}</td>
+                        <td>{{ candidate.status }}</td>
+                        <td>
+                            <div class="actions-btns">
+                                <a href="{{ url_for('admin.approve_candidate', candidate_id=candidate.id) }}" class="btn btn-success">
+                                    <i class="bi bi-check-circle me-2"></i>Approve
+                                </a>
+                                <a href="{{ url_for('admin.reject_candidate', candidate_id=candidate.id) }}" class="btn btn-danger">
+                                    <i class="bi bi-x-circle me-2"></i>Reject
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary mt-4">
+            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

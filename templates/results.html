@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Election Results</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+</head>
+<body>
+    <h2>Live Election Results</h2>
+    <div id="results">
+        {% for candidate in candidates %}
+            <div>
+                <h4>{{ candidate.name }}</h4>
+                <p>Votes: <span id="votes-{{ candidate.id }}">0</span></p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        var socket = io.connect("http://" + document.domain + ":" + location.port);
+
+        socket.on("update_results", function(data) {
+            let candidateElement = document.getElementById("votes-" + data.candidate_id);
+            if (candidateElement) {
+                candidateElement.innerText = data.votes;
+            }
+        });
+    </script>
+</body>
+</html>

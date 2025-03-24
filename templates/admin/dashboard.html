@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #4b5563;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f9fafb;
+            --dark: #1f2937;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark);
+        }
+
+        .navbar {
+            background-color: var(--primary);
+        }
+
+        .navbar .navbar-brand {
+            color: white;
+            font-weight: 600;
+        }
+
+        .navbar-nav .nav-link {
+            color: white;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--accent);
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            color: white;
+            padding: 3rem 0;
+            border-radius: 0 0 1.5rem 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-header p {
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            padding: 1.5rem 1.25rem;
+            border-bottom: none;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .btn {
+            border-radius: 0.5rem;
+            font-weight: 500;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            border-color: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background-color: #e8a317;
+            border-color: #e8a317;
+        }
+
+        .list-group-item {
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .list-group-item:hover {
+            background-color: #f0f2f5;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-radius: 1rem;
+        }
+
+        footer .btn-outline-primary {
+            color: white;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        footer .btn-outline-primary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-info">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="#">Dut Election System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-header">
+        <div class="container">
+            <h1>Welcome to the Admin Dashboard</h1>
+            <p>You are logged in as {{ current_user.name }}. Manage the election system from here.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>View Feedback</h3>
+                <ul id="feedbackList" class="list-group"></ul>
+            </div>
+        </div>
+
+        <script>
+            function fetchFeedback() {
+                fetch('/get_feedback')
+                    .then(response => response.json())
+                    .then(data => {
+                        let list = document.getElementById("feedbackList");
+                        list.innerHTML = "";
+                        data.forEach(item => {
+                            let listItem = `<li class="list-group-item"><strong>User ${item.user_id}:</strong> ${item.content}</li>`;
+                            list.innerHTML += listItem;
+                        });
+                    })
+                    .catch(error => console.error('Error fetching feedback:', error));
+            }
+
+            fetchFeedback();
+        </script>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <a href="{{ url_for('admin.manage_candidates') }}" class="btn btn-success btn-block">Manage Candidates</a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{ url_for('admin.election_results') }}" class="btn btn-primary btn-block">View Election Results</a>
+            </div>
+            <div class="col-md-4">
+                <a href="{{ url_for('admin.manage_elections') }}" class="btn btn-warning btn-block">Manage Elections</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; Dut Election System. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.8/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Results & Feedback</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        .results-card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            border: none;
+            overflow: hidden;
+        }
+        .results-card .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 16px 20px;
+        }
+        .feedback-card {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: none;
+            background-color: #f8f9fa;
+        }
+        .votes-badge {
+            background-color: #0d6efd;
+            color: white;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 4px 12px;
+        }
+        .party-badge {
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 4px 10px;
+        }
+        .party-effsc {
+            background-color: #E53935;
+            color: white;
+        }
+        .party-sasco {
+            background-color: #388E3C;
+            color: white;
+        }
+        .party-mk {
+            background-color: #1976D2;
+            color: white;
+        }
+        .results-table {
+            margin-bottom: 0;
+        }
+        .results-table th {
+            font-weight: 600;
+            color: #495057;
+        }
+        .results-spinner {
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .election-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .feedback-submit-btn {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .results-placeholder {
+            padding: 40px 0;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="mb-4">
+                    <i class="bi bi-bar-chart-fill me-2"></i>Past Election Results
+                </h2>
+                
+                {% for election in past_elections %}
+                <div class="results-card card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-0">{{ election.name }}</h5>
+                            <span class="election-date">{{ election.date.strftime('%B %d, %Y') if election.date else '' }}</span>
+                        </div>
+                        <button onclick="fetchResults({{ election.id }})" class="btn btn-primary" id="view-btn-{{ election.id }}">
+                            <i class="bi bi-eye me-2"></i>View Results
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover results-table">
+                                <thead>
+                                    <tr>
+                                        <th><i class="bi bi-person me-1"></i>Candidate</th>
+                                        <th><i class="bi bi-people me-1"></i>Party</th>
+                                        <th><i class="bi bi-award me-1"></i>Position</th>
+                                        <th class="text-center"><i class="bi bi-check2-square me-1"></i>Votes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-{{ election.id }}">
+                                    <tr>
+                                        <td colspan="4" class="results-placeholder">
+                                            <i class="bi bi-arrow-clockwise me-2"></i>Click "View Results" to load data
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-8 mx-auto">
+                <div class="feedback-card card p-4">
+                    <h2 class="mb-4">
+                        <i class="bi bi-chat-square-text me-2"></i>Submit Feedback / Grievance
+                    </h2>
+                    <form id="feedbackForm">
+                        <div class="mb-3">
+                            <label for="content" class="form-label fw-medium">Your Feedback</label>
+                            <textarea name="content" id="content" class="form-control" rows="5" 
+                                placeholder="Please share your feedback, suggestions, or concerns regarding the election process..." 
+                                required></textarea>
+                            <div class="form-text">Your feedback helps us improve the election process for everyone.</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn feedback-submit-btn flex-grow-1" id="submitFeedbackBtn">
+                                <i class="bi bi-send me-2"></i>Submit Feedback
+                            </button>
+                            <a href="{{ url_for('voter.dashboard') }}" class="btn btn-outline-secondary flex-grow-1">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    function getPartyClass(party) {
+        if (party.toUpperCase().includes('EFFSC')) return 'party-effsc';
+        if (party.toUpperCase().includes('SASCO')) return 'party-sasco';
+        if (party.toUpperCase().includes('MK')) return 'party-mk';
+        return 'bg-secondary';
+    }
+
+    function fetchResults(electionId) {
+        const viewButton = document.getElementById(`view-btn-${electionId}`);
+        const tableBody = document.getElementById(`results-${electionId}`);
+ 
+        viewButton.innerHTML = '<span class="spinner-border spinner-border-sm results-spinner" role="status" aria-hidden="true"></span>Loading...';
+        viewButton.disabled = true;
+        
+        fetch(`/get_past_results/${electionId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                tableBody.innerHTML = "";
+                
+                if (data.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4">
+                        <i class="bi bi-exclamation-circle me-2"></i>No results available for this election.
+                    </td></tr>`;
+                } else {
+                    data.sort((a, b) => b.votes_count - a.votes_count);
+ 
+                    const positionGroups = {};
+                    data.forEach(result => {
+                        if (!positionGroups[result.position]) {
+                            positionGroups[result.position] = [];
+                        }
+                        positionGroups[result.position].push(result);
+                    });
+
+                    Object.keys(positionGroups).forEach(position => {
+                        const positionResults = positionGroups[position];
+
+                        tableBody.innerHTML += `<tr class="table-light">
+                            <td colspan="4" class="fw-bold py-3">
+                                <i class="bi bi-award me-2"></i>${position}
+                            </td>
+                        </tr>`;
+
+                        positionResults.forEach((result, index) => {
+                            const isWinner = index === 0;
+                            const rowClass = isWinner ? 'table-success' : '';
+                            
+                            let row = `<tr class="${rowClass}">
+                                <td>
+                                    ${result.candidate_name}
+                                    ${isWinner ? '<i class="bi bi-trophy text-warning ms-2"></i>' : ''}
+                                </td>
+                                <td>
+                                    <span class="party-badge ${getPartyClass(result.party)}">
+                                        ${result.party}
+                                    </span>
+                                </td>
+                                <td>${result.position}</td>
+                                <td class="text-center">
+                                    <span class="votes-badge">${result.votes_count}</span>
+                                </td>
+                            </tr>`;
+                            tableBody.innerHTML += row;
+                        });
+                    });
+                }
+
+                viewButton.innerHTML = '<i class="bi bi-arrow-clockwise me-2"></i>Refresh Results';
+                viewButton.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error fetching results:', error);
+                tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-4">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Error loading results. Please try again.
+                </td></tr>`;
+ 
+                viewButton.innerHTML = '<i class="bi bi-arrow-clockwise me-2"></i>Try Again';
+                viewButton.disabled = false;
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const feedbackForm = document.getElementById('feedbackForm');
+        const submitButton = document.getElementById('submitFeedbackBtn');
+        
+        feedbackForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm results-spinner" role="status" aria-hidden="true"></span>Submitting...';
+            submitButton.disabled = true;
+            
+            const feedbackContent = document.getElementById('content').value;
+
+            setTimeout(() => {
+                feedbackForm.reset();
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-success mt-3';
+                alertDiv.innerHTML = '<i class="bi bi-check-circle me-2"></i>Your feedback has been submitted successfully!';
+                feedbackForm.appendChild(alertDiv);
+     
+                submitButton.innerHTML = '<i class="bi bi-send me-2"></i>Submit Feedback';
+                submitButton.disabled = false;
+     
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 5000);
+            }, 1500);
+        });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Profile</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        .profile-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .form-label {
+            font-weight: 500;
+        }
+        .edit-tooltip {
+            cursor: pointer;
+        }
+        .readonly-field {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="profile-card p-4 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="mb-0"><i class="bi bi-person-circle me-2"></i>Profile Details</h2>
+                        <span class="badge bg-primary">Voter</span>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('voter.profile') }}" id="profileForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">
+                                Full Name
+                                <i class="bi bi-pencil-fill text-primary fs-6 ms-1 edit-tooltip" 
+                                   data-bs-toggle="tooltip" data-bs-placement="top" 
+                                   title="This field can be edited"></i>
+                            </label>
+                            <input type="text" id="name" class="form-control" name="name" 
+                                   value="{{ user.name }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" id="email" class="form-control readonly-field" 
+                                       value="{{ user.email }}" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="student_id" class="form-label">Student ID</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
+                                <input type="text" id="student_id" class="form-control readonly-field" 
+                                       value="{{ user.student_id }}" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                                <input type="text" id="role" class="form-control readonly-field" 
+                                       value="{{ user.role.name }}" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="created_at" class="form-label">Account Created On</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+                                <input type="text" id="created_at" class="form-control readonly-field" 
+                                       value="{{ user.created_at.strftime('%B %d, %Y') }}" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary flex-grow-1" id="updateBtn">
+                                <i class="bi bi-check-circle me-2"></i>Update Profile
+                            </button>
+                            <a href="{{ url_for('voter.dashboard') }}" class="btn btn-outline-secondary flex-grow-1" id="backBtn">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
+            document.getElementById('profileForm').addEventListener('submit', function(event) {
+                let valid = true;
+                const nameField = document.getElementById('name');
+                
+                if (nameField.value.trim() === '') {
+                    nameField.classList.add('is-invalid');
+                    valid = false;
+                } else {
+                    nameField.classList.remove('is-invalid');
+                }
+                
+                if (!valid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    document.getElementById('updateBtn').innerHTML = 
+                        '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Updating...';
+                    document.getElementById('updateBtn').disabled = true;
+                }
+            });
+
+            document.getElementById('name').addEventListener('focus', function() {
+                this.classList.add('border-primary');
+            });
+            
+            document.getElementById('name').addEventListener('blur', function() {
+                this.classList.remove('border-primary');
+            });
+        });
+    </script>
+</body>
+</html>

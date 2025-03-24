@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #4b5563;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f9fafb;
+            --dark: #1f2937;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark);
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary), #3b82f6);
+            color: white;
+            padding: 2.5rem 0;
+            border-radius: 0 0 1.5rem 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-header p {
+            font-size: 1.15rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .card-header {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header i {
+            margin-right: 0.75rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .btn {
+            border-radius: 0.5rem;
+            font-weight: 500;
+            padding: 0.625rem 1.25rem;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            padding: 0.625rem 1rem;
+            border: 1px solid #e5e7eb;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+        }
+        
+        .election-select {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+        
+        .list-group-item {
+            background-color: #f9fafb;
+            margin-bottom: 0.75rem;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .list-group-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .list-group-item strong {
+            color: var(--primary);
+        }
+        
+        .vote-card {
+            background-color: white;
+            padding: 1.75rem;
+            box-shadow: var(--card-shadow);
+            border-radius: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .vote-card h5 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .vote-card h5 i {
+            margin-right: 0.75rem;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, var(--dark), #374151);
+            color: white;
+            text-align: center;
+            padding: 1.75rem 0;
+            margin-top: 2.5rem;
+            border-radius: 1rem;
+        }
+        
+        .footer .btn-outline-primary {
+            color: white;
+            border-color: rgba(255, 255, 255, 0.5);
+            margin: 0 0.5rem 1rem;
+        }
+        
+        .footer .btn-outline-primary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+        
+        .footer .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+        
+        .footer .btn-danger:hover {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .candidate-card {
+            border-left: 4px solid var(--primary);
+            position: relative;
+        }
+        
+        .candidate-party {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+        
+        .candidate-position {
+            display: inline-block;
+            margin-top: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            background-color: #e5e7eb;
+            color: var(--secondary);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 1.5rem 0;
+            }
+            
+            .dashboard-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .card-body {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-info">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="dashboard-header">
+        <div class="container">
+            <h1>Welcome, {{ current_user.name }}</h1>
+            <p>Your Election Dashboard</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-user"></i> Your Profile
+                    </div>
+                    <div class="card-body">
+                        <p>Manage your personal details and preferences.</p>
+                        <a href="{{ url_for('voter.profile') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-cog"></i> Go to Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-vote-yea"></i> Select Election
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="election" class="form-label">Choose Your Election</label>
+                            <select name="election_id" id="election" class="election-select form-select" required>
+                                {% for election in elections %}
+                                    <option value="{{ election.id }}" {% if election.id == active_election.id %}selected{% endif %}>
+                                        {{ election.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-users"></i> Candidates for {{ active_election.name }}
+                    </div>
+                    <div class="card-body">
+                        {% if active_election.candidates %}
+                            <ul class="list-group">
+                                {% for candidate in active_election.candidates %}
+                                    <li class="list-group-item candidate-card">
+                                        <div class="candidate-party">{{ candidate.party }}</div>
+                                        <strong>{{ candidate.name }}</strong>
+                                        <div class="candidate-position">{{ candidate.position }}</div>
+                                        <p class="mt-3 mb-0">{{ candidate.campaign_speech }}</p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No candidates available for this election.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="vote-card">
+                    <h5><i class="fas fa-ballot"></i> Cast Your Vote for {{ active_election.name }}</h5>
+                    <form method="POST" action="{{ url_for('vote.cast_vote') }}">
+                        <input type="hidden" name="election_id" value="{{ active_election.id }}">
+                        <div class="mb-3">
+                            <label for="candidate" class="form-label">Choose a Candidate</label>
+                            <select name="candidate_id" id="candidate" class="form-select" required>
+                                {% for candidate in active_election.candidates %}
+                                    <option value="{{ candidate.id }}">
+                                        {{ candidate.name }} - ({{ candidate.party }} | {{ candidate.position }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-vote-yea"></i> Vote Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>
+                <a href="{{ url_for('main_routes.election_history') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-history"></i> Election History
+                </a>
+                <a href="{{ url_for('candidate.apply') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-file-alt"></i> Apply as Candidate
+                </a>
+            </div>
+            <div class="mt-3">
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-danger w-100">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const electionSelect = document.getElementById('election');
+            if (electionSelect) {
+                electionSelect.addEventListener('change', function() {
+                    this.classList.add('border-primary');
+                    setTimeout(() => {
+                        this.classList.remove('border-primary');
+                    }, 500);
+                });
+            }
+            
+            const candidateItems = document.querySelectorAll('.candidate-card');
+            candidateItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.borderLeftWidth = '6px';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.borderLeftWidth = '4px';
+                });
+            });
+
+            const voteButton = document.querySelector('.vote-card .btn-primary');
+            if (voteButton) {
+                voteButton.addEventListener('click', function(e) {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                });
+            }
+        });
+    </script>
